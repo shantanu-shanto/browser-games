@@ -103,30 +103,38 @@ button:active {
     color: #ff6b6b;
     margin-bottom: 20px;
 }
-/* Mobile Controls */
 .mobile-controls {
     position: absolute;
-    bottom: 30px;
-    width: 100%;
-    display: flex;
+    bottom: 40px;
+    left: 0;
+    right: 0;
+    display: none;
     justify-content: space-between;
     padding: 0 40px;
-    z-index: 5;
+    z-index: 10;
+}
+
+.left-controls, .right-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .control-btn {
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
     background: rgba(102, 126, 234, 0.7);
     border: 3px solid rgba(255, 255, 255, 0.3);
     color: white;
-    font-size: 32px;
+    font-size: 28px;
     font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
-    transition: all 0.1s;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
@@ -135,46 +143,47 @@ button:active {
     transform: scale(0.95);
 }
 
-/* Responsive Design */
+#up-btn {
+    background: rgba(76, 175, 80, 0.7);
+}
+
+#up-btn:active {
+    background: rgba(76, 175, 80, 0.9);
+}
+
+#down-btn {
+    background: rgba(244, 67, 54, 0.7);
+}
+
+#down-btn:active {
+    background: rgba(244, 67, 54, 0.9);
+}
+
 @media (max-width: 768px) {
-    .game-container {
-        padding: 10px;
-        max-width: 100%;
+    .mobile-controls {
+        display: flex;
     }
     
-    #gameCanvas {
-        width: 100%;
-        height: auto;
-    }
-    
-    .menu, .game-over {
-        padding: 30px 40px;
-        max-width: 90%;
-    }
-    
-    .menu h1 {
-        font-size: 36px;
-    }
-    
-    button {
-        padding: 12px 30px;
+    #ui {
         font-size: 18px;
+        padding: 0 15px;
+    }
+    
+    .control-btn {
+        width: 65px;
+        height: 65px;
+        font-size: 24px;
     }
 }
 
 @media (max-width: 480px) {
-    .score-board {
-        font-size: 14px;
-        padding: 8px 15px;
+    .mobile-controls {
+        padding: 0 20px;
     }
     
     .control-btn {
-        width: 70px;
-        height: 70px;
-        font-size: 28px;
-    }
-    
-    .mobile-controls {
-        padding: 0 20px;
+        width: 60px;
+        height: 60px;
+        font-size: 22px;
     }
 }

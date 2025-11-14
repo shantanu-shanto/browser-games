@@ -293,7 +293,10 @@ function createCoin() {
 function setupTouchControls() {
     const leftBtn = document.getElementById('left-btn');
     const rightBtn = document.getElementById('right-btn');
+    const upBtn = document.getElementById('up-btn');
+    const downBtn = document.getElementById('down-btn');
     
+    // Left button
     leftBtn.addEventListener('touchstart', (e) => {
         e.preventDefault();
         touchControls.left = true;
@@ -304,6 +307,7 @@ function setupTouchControls() {
         touchControls.left = false;
     });
     
+    // Right button
     rightBtn.addEventListener('touchstart', (e) => {
         e.preventDefault();
         touchControls.right = true;
@@ -313,7 +317,30 @@ function setupTouchControls() {
         e.preventDefault();
         touchControls.right = false;
     });
+    
+    // Up button (accelerate)
+    upBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        keys['ArrowUp'] = true;
+    });
+    
+    upBtn.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        keys['ArrowUp'] = false;
+    });
+    
+    // Down button (brake)
+    downBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        keys['ArrowDown'] = true;
+    });
+    
+    downBtn.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        keys['ArrowDown'] = false;
+    });
 }
+
 
 function updatePlayer() {
     if (!gameRunning) return;
