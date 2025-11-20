@@ -13,12 +13,11 @@ let minSpeed = 30;
 let maxSpeed = 150;
 let bobTimer = 0;
 
-
 // Initialize Three.js
 function init() {
     // Scene
     scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0x87ceeb, 10, 50);
+    scene.fog = new THREE.Fog(0x222222, 10, 100);
     
     // Camera - Better positioning for full car view
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -32,10 +31,10 @@ function init() {
     document.body.appendChild(renderer.domElement);
     
     // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8); // brighter ambient
     scene.add(ambientLight);
     
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0); // stronger directional light
     directionalLight.position.set(5, 10, 5);
     directionalLight.castShadow = true;
     scene.add(directionalLight);
@@ -43,6 +42,12 @@ function init() {
     // Create road
     createRoad();
     
+    // Create stars in the sky (added)
+    createStars();
+    
+    // Add trees on both sides (added)
+    addTrees();
+
     // Create player car
     createPlayerCar();
     
@@ -63,11 +68,31 @@ function init() {
     animate();
 }
 
+function createStars() {
+    const starGeometry = new THREE.BufferGeometry();
+    const starCount = 500;
+    const positions = [];
+
+    for (let i = 0; i < starCount; i++) {
+        positions.push(
+            (Math.random() - 0.5) * 100, // x
+            Math.random() * 40 + 10,     // y high in sky
+            (Math.random() - 0.5) * 100  // z
+        );
+    }
+
+    starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+
+    const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.3 });
+    const stars = new THREE.Points(starGeometry, starMaterial);
+
+    scene.add(stars);
+}
 
 function createRoad() {
-    // Road surface - WIDER for 6 lanes
-    const roadGeometry = new THREE.PlaneGeometry(8, 100);
-    const roadMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
+    // Road surface - WIDER for 6 lanes, lighter color for visibility
+    const roadGeometry = new THREE.PlaneGeometry(8, 700);
+    const roadMaterial = new THREE.MeshStandardMaterial({ color: 0x222222 }); // darker uniform gray
     road = new THREE.Mesh(roadGeometry, roadMaterial);
     road.rotation.x = -Math.PI / 2;
     road.position.y = 0;
@@ -75,7 +100,7 @@ function createRoad() {
     scene.add(road);
     
     // Road edges (grass)
-    const edgeGeometry = new THREE.PlaneGeometry(3, 100);
+    const edgeGeometry = new THREE.PlaneGeometry(3, 700);
     const edgeMaterial = new THREE.MeshStandardMaterial({ color: 0x2d5016 });
     
     const leftEdge = new THREE.Mesh(edgeGeometry, edgeMaterial);
@@ -89,16 +114,20 @@ function createRoad() {
     scene.add(rightEdge);
     
     // Road lines - 5 dividing lines for 6 lanes
+    const roadLength = 700;
+    const lineSpacing = 5;
     const lanePositions = [-2.4, -1.2, 0, 1.2, 2.4];
-    for (let i = 0; i < 20; i++) {
+
+    for (let i = 0; i < roadLength / lineSpacing; i++) {
         lanePositions.forEach(xPos => {
-            const lineGeometry = new THREE.BoxGeometry(0.1, 0.01, 1);
+            const lineGeometry = new THREE.BoxGeometry(0.1, 0.01, 3);
             const lineMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
             const line = new THREE.Mesh(lineGeometry, lineMaterial);
-            line.position.set(xPos, 0.01, -i * 5);
+            line.position.set(xPos, 0.8, -i * lineSpacing);
             scene.add(line);
         });
     }
+
     
     // Add lamp posts on both sides
     for (let i = 0; i < 15; i++) {
@@ -116,6 +145,42 @@ function createRoad() {
     }
 }
 
+// Trees creation (added)
+function createTree() {
+    const tree = new THREE.Group();
+
+    // Trunk
+    const trunkGeometry = new THREE.CylinderGeometry(0.1, 0.1, 1, 6);
+    const trunkMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
+    const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
+    trunk.position.y = 0.5;
+    tree.add(trunk);
+
+    // Leaves (cone)
+    const leavesGeometry = new THREE.ConeGeometry(0.6, 1.5, 8);
+    const leavesMaterial = new THREE.MeshStandardMaterial({ color: 0x228B22 });
+    const leaves = new THREE.Mesh(leavesGeometry, leavesMaterial);
+    leaves.position.y = 1.7;
+    tree.add(leaves);
+
+    tree.castShadow = true;
+    tree.receiveShadow = true;
+
+    return tree;
+}
+
+function addTrees() {
+    const treeCount = 12;
+    for (let i = 0; i < treeCount; i++) {
+        const leftTree = createTree();
+        leftTree.position.set(-7, 0, -i * 8);
+        scene.add(leftTree);
+
+        const rightTree = createTree();
+        rightTree.position.set(7, 0, -i * 8);
+        scene.add(rightTree);
+    }
+}
 
 function createPlayerCar() {
     playerCar = new THREE.Group();
@@ -174,7 +239,6 @@ function createPlayerCar() {
     scene.add(playerCar);
 }
 
-
 function createLampPost(z) {
     const lampPost = new THREE.Group();
     
@@ -208,7 +272,6 @@ function createLampPost(z) {
     return lampPost;
 }
 
-
 function updateLampPosts() {
     const moveSpeed = userSpeed / 200;
     
@@ -221,7 +284,6 @@ function updateLampPosts() {
         }
     });
 }
-
 
 function createObstacleCar() {
     const obstacle = new THREE.Group();
@@ -278,12 +340,11 @@ function createObstacleCar() {
     const lanes = [-3.0, -1.8, -0.6, 0.6, 1.8, 3.0];
     const lane = lanes[Math.floor(Math.random() * lanes.length)];
     
-    obstacle.position.set(lane, 0, -20);
+    obstacle.position.set(lane, 0, -100);
     
     scene.add(obstacle);
     obstacles.push(obstacle);
 }
-
 
 function createCoin() {
     const coinGeometry = new THREE.CylinderGeometry(0.3, 0.3, 0.1, 16);
@@ -296,13 +357,12 @@ function createCoin() {
     coin.rotation.x = Math.PI / 2;
     
     const x = (Math.random() - 0.5) * 6;
-    coin.position.set(x, 0.5, -20);
+    coin.position.set(x, 0.5, -60);
     coin.castShadow = true;
     
     scene.add(coin);
     coins.push(coin);
 }
-
 
 function setupTouchControls() {
     const leftBtn = document.getElementById('left-btn');
@@ -355,7 +415,6 @@ function setupTouchControls() {
     });
 }
 
-
 function updatePlayer() {
     if (!gameRunning) return;
     
@@ -404,11 +463,9 @@ function updatePlayer() {
     }
 }
 
-
 function updateSpeedDisplay() {
     document.getElementById('speed').textContent = Math.round(userSpeed);
 }
-
 
 function updateObstacles() {
     const moveSpeed = userSpeed / 200;
@@ -430,7 +487,6 @@ function updateObstacles() {
         }
     });
 }
-
 
 function updateCoins() {
     const moveSpeed = userSpeed / 200;
@@ -455,7 +511,6 @@ function updateCoins() {
     });
 }
 
-
 function checkCollision(car1, car2) {
     const distance = Math.sqrt(
         Math.pow(car1.position.x - car2.position.x, 2) +
@@ -463,7 +518,6 @@ function checkCollision(car1, car2) {
     );
     return distance < 1;
 }
-
 
 function checkCoinCollision(car, coin) {
     const distance = Math.sqrt(
@@ -473,18 +527,15 @@ function checkCoinCollision(car, coin) {
     return distance < 0.8;
 }
 
-
 function updateScore() {
     document.getElementById('score').textContent = score;
 }
-
 
 function gameOver() {
     gameRunning = false;
     document.getElementById('final-score').textContent = score;
     document.getElementById('game-over').style.display = 'block';
 }
-
 
 function restartGame() {
     // Clear obstacles and coins
@@ -506,18 +557,15 @@ function restartGame() {
     updateSpeedDisplay();
 }
 
-
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-
 // Game loop
 let lastObstacleTime = 0;
 let lastCoinTime = 0;
-
 
 function animate(time) {
     requestAnimationFrame(animate);
@@ -543,7 +591,6 @@ function animate(time) {
     
     renderer.render(scene, camera);
 }
-
 
 // Start game
 init();

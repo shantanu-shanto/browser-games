@@ -1,0 +1,104 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 20px;
+}
+
+#game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#game-board {
+  display: grid;
+  grid-template-columns: repeat(15, 40px);
+  grid-template-rows: repeat(15, 40px);
+  gap: 2px;
+  border: 3px solid #333;
+  background-color: #fff;
+  margin-bottom: 20px;
+}
+
+.cell {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.red-zone {
+  background-color: #f44336cc;
+}
+
+.green-zone {
+  background-color: #4caf50cc;
+}
+
+.yellow-zone {
+  background-color: #ffeb3bcc;
+}
+
+.blue-zone {
+  background-color: #2196f3cc;
+}
+
+.home-center {
+  background-color: #ddd;
+  border: 2px solid #999;
+  grid-column: 7 / span 3;
+  grid-row: 7 / span 3;
+}
+
+/* Tokens */
+.token {
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  margin: auto;
+  margin-top: 5px;
+  box-shadow: 0 0 5px #333;
+  cursor: pointer;
+  position: relative;
+  top: 5px;
+  transition: all 0.3s ease;
+}
+
+.token.red {
+  background-color: #f44336;
+}
+
+.token.green {
+  background-color: #4caf50;
+}
+
+.token.yellow {
+  background-color: #ffeb3b;
+  border: 1px solid #aaa;
+}
+
+.token.blue {
+  background-color: #2196f3;
+}
+
+#controls {
+  margin-top: 10px;
+}
+
+#roll-dice {
+  font-size: 16px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+#dice-result {
+  margin-top: 10px;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+#turn-info {
+  margin-top: 10px;
+  font-size: 18px;
+  min-height: 24px;
+}
